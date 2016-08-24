@@ -196,7 +196,7 @@ class NedlerMeadSolver ():
 
     (l_x1, l_fx1), (l_xn, l_fxn), (l_xnp1, l_fxnp1) = self.m_simplex.order()
 
-    self.m_simplex.printf()
+    #self.m_simplex.printf()
 
     l_iter = 0
     l_x1Prev = l_x1
@@ -253,13 +253,12 @@ class NedlerMeadSolver ():
 
       """ Check terminating condition """
       if math.fabs(l_fxnp1 - l_fx1) <= _errorTolerance:
-        print "Algorithm converged."
+        print "Algorithm converged (%u iterations)" %l_iter
         break;
 
     """ All done """
     if l_iter == _maxIterations:
       raise ConvergenceError("Algorithm did not converge. Try increasing '_maxIterations' or 'm_size'")
 
-    print("Best f(%s) = %f; took %u iterations."
-          %(l_x1, l_fx1, l_iter))
+    return (l_x1, l_fx1)
 
