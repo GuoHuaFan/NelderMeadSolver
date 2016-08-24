@@ -6,34 +6,9 @@
 """
 
 import sys
-import c_NedlerMead as NedLerMead
-
-""" Global debug level """
-g_dbgLvl = 0
-g_progressReportInterval = 500
-
-"""
-  Function to print an error message
-
-  @param  string
-
-  @return None
-"""
-def error (x_str):
-  print ("ERROR: %s" %x_str)
-  sys.exit()
-
-"""
-  Function to print a debug message
-
-  @param  String
-  @param  Debug level
-
-  @return None
-"""
-def debugPrint (x_str, x_dbgLvl=1):
-  if x_dbgLvl <= g_dbgLvl:
-    print ("Debug (Level %u): %s" %(x_dbgLvl, x_str))
+import nedlerMead
+from nedlerMead import NedlerMeadSolver
+from nedlerMead import ConvergenceError
 
 def main():
 
@@ -85,10 +60,15 @@ def main():
               )
 
   """ Construct a Nedler Mead optimizer """
-  l_nm = c_NedlerMead(l_spaceDim, l_fn, l_coeffs)
+  l_nm = NedlerMeadSolver(l_spaceDim, l_fn, l_coeffs)
 
-  """ Run it """
-  l_nm.run(l_start)
+  nedlerMead.setMaxIterations(5000)
+
+  """ Solve it """
+  try:
+    l_nm.solve(l_start)
+  except ConvergenceError as e:
+    print e.message
 
 if __name__ == "__main__":
     main()

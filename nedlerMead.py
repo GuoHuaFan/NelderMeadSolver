@@ -10,6 +10,58 @@ import sys
 import math
 import numpy as np
 
+""" Debug level """
+_dbgLvl = 0
+
+""" Progress report interval """
+_progressReportInterval = 1000
+
+""" Error tolerance """
+_errorTolerance = 0.000000005
+
+""" Maximum number of iterations """
+_maxIterations = 20000
+
+def setDebugLevel (x_dbgLvl):
+  global _dbgLvl
+  _dbgLvl = x_dbgLvl
+
+def setProgressReportInterval (x_progressReportInterval):
+  global _progressReportInterval
+  _progressReportInterval = x_progressReportInterval
+
+def setErrorTolerance (x_errorTolerance):
+  global _errorTolerance
+  _errorTolerance = x_errorTolerance
+
+def setMaxIterations (x_maxIterations):
+  global _maxIterations
+  _maxIterations = x_maxIterations
+
+"""
+  Function to print an error message
+
+  @param  Error string
+
+  @return None
+"""
+def _error (x_str):
+  print ("ERROR: %s" %x_str)
+  sys.exit()
+
+"""
+  Function to print a debug message
+
+  @param  Debug string
+  @param  Debug level
+
+  @return None
+"""
+def _debugPrint (x_str, x_dbgLvl=1):
+  global _dbgLvl
+  if x_dbgLvl <= _dbgLvl:
+    print ("Debug (Level %u): %s" %(x_dbgLvl, x_str))
+
 """ Simplex class """
 
 """
@@ -33,7 +85,11 @@ import numpy as np
     m_coeffS - Shrink coefficient (\sigma)
 """
 
-class c_Simplex ():
+class ConvergenceError(Exception):
+  def __init__ (self, x_message):
+    self.message = x_message;
+
+class Simplex ():
   def __init__ (self, x_dim, x_fn, x_coeffs):
     self.m_dim = x_dim
     self.m_fn  = x_fn
@@ -94,32 +150,32 @@ class c_Simplex ():
     self.m_x0 -= self.m_arr[self.m_sorted[-1], :]
     """ Compute average """
     self.m_x0 /= self.m_dim
-    debugPrint("Centroid: %s" %self.m_x0)
+    _debugPrint("Centroid: %s" %self.m_x0)
 
   """ Reflected point: x_r = x_0 + \alpha * (x_0 - x_{n+1}) """
   def computeXr (self):
     self.m_xr = np.add(self.m_x0,
                        self.m_coeffR * (np.subtract(self.m_x0, self.m_xnp1)))
-    debugPrint("Reflected point: %s" %self.m_xr)
+    _debugPrint("Reflected point: %s" %self.m_xr)
     return self.m_xr, self.m_fn(self.m_xr)
 
   """ Expanded point: x_e = x_0 + \gamma * (x_r - x_0) """
   def computeXe (self):
     self.m_xe = np.add(self.m_x0,
                        self.m_coeffE * (np.subtract(self.m_xr, self.m_x0)))
-    debugPrint("Expanded point: %s" %self.m_xe)
+    _debugPrint("Expanded point: %s" %self.m_xe)
     return self.m_xe, self.m_fn(self.m_xe)
 
   """ Contracted point: x_c = x_0 + \rho * (x_{n+1} - x_0) """
   def computeXc (self):
     self.m_xc = np.add(self.m_x0,
                        self.m_coeffC * (np.subtract(self.m_xnp1, self.m_x0)))
-    debugPrint("Contracted point: %s" %self.m_xe)
+    _debugPrint("Contracted point: %s" %self.m_xe)
     return self.m_xc, self.m_fn(self.m_xc)
 
   """ Shrink: x_i = x_1 + \sigma * (x_i - x_1) for all 1 < i <= n+1 """
   def shrink (self):
-    debugPrint("Shrinking...")
+    _debugPrint("Shrinking...")
     for i in self.m_sorted[1:]:
       self.m_arr[i, :] = np.add(self.x1(),
                          self.m_coeffS * (np.subtract(self.m_arr[i], self.m_x1)))
@@ -129,14 +185,12 @@ class c_Simplex ():
     self.m_arr[self.m_sorted[-1], :] = x_new
     self.m_sorted[-1] = -1
 
-class c_NedlerMead ():
+class NedlerMeadSolver ():
   def __init__ (self, x_dim, x_fn, x_coeffs):
     """ Construct the simplex """
-    self.m_simplex = c_Simplex(x_dim, x_fn, x_coeffs)
-    self.m_tol     = 0.000000005
-    self.m_iterMax = 20000
+    self.m_simplex = Simplex(x_dim, x_fn, x_coeffs)
 
-  def run (self, x_start):
+  def solve (self, x_start):
     """ Anchor the simplex at a starting point; also orders the points """
     self.m_simplex.anchor(x_start)
 
@@ -148,7 +202,7 @@ class c_NedlerMead ():
     l_x1Prev = l_x1
     l_fx1Prev = l_fx1
 
-    while (l_iter < self.m_iterMax):
+    while (l_iter < _maxIterations):
 
       """ Perform Reflection """
       l_xr, l_fxr = self.m_simplex.computeXr()
@@ -184,7 +238,7 @@ class c_NedlerMead ():
       """ Increment the number of iterations """
       l_iter += 1
 
-      debugPrint("End of iteration %u: Best f(%s) = %f, Worst f(%s) = %f."
+      _debugPrint("End of iteration %u: Best f(%s) = %f, Worst f(%s) = %f."
                  %(l_iter,
                    l_x1,
                    l_fx1,
@@ -193,17 +247,18 @@ class c_NedlerMead ():
                    ))
 
       """ Print progress report """
-      if l_iter % g_progressReportInterval == 0:
+      global _progressReportInterval
+      if l_iter % _progressReportInterval == 0:
         print "Progress status: Iteration %u..." %l_iter
 
       """ Check terminating condition """
-      if math.fabs(l_fxnp1 - l_fx1) <= self.m_tol:
+      if math.fabs(l_fxnp1 - l_fx1) <= _errorTolerance:
         print "Algorithm converged."
         break;
 
     """ All done """
-    if l_iter == self.m_iterMax:
-      print "Algorithm did not converge. Try increasing 'm_iterMax' or 'm_size'."
+    if l_iter == _maxIterations:
+      raise ConvergenceError("Algorithm did not converge. Try increasing '_maxIterations' or 'm_size'")
 
     print("Best f(%s) = %f; took %u iterations."
           %(l_x1, l_fx1, l_iter))
