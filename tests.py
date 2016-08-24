@@ -40,8 +40,8 @@ def main():
 
   """ Functions """
 
-  """ Sample function """
-  testSample = Test(x_name="Simple Cubic",
+  """ Cubic function """
+  testCubic = Test(x_name="Cubic",
     x_fn = lambda x: (x[0] * (x[0] - 1)
                      + (x[1] - 2) * (x[1] + 2)
                      + (x[2]) * (x[2] + 3)
@@ -87,7 +87,7 @@ def main():
     x_maxIter=1000)
 
   l_testsPassed = 0
-  l_tests = [testSample, testRb, testW, testP, testWs]
+  l_tests = [testCubic, testRb, testW, testP, testWs]
   for i in xrange(len(l_tests)):
     try:
       print "\nTest %u:" %(i + 1)
