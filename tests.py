@@ -6,6 +6,9 @@
 """
 
 import sys
+import datetime
+import traceback
+
 import nedlerMead
 from nedlerMead import NedlerMeadSolver
 from nedlerMead import ConvergenceError
@@ -27,13 +30,14 @@ class Test:
   
     """ Construct a Nedler Mead optimizer """
     l_nm = NedlerMeadSolver(len(self.m_start), self.m_fn, l_coeffs)
-  
-    #nedlerMead.setMaxIterations(self.m_maxIter)
-    #nedlerMead.setDebugLevel(1)
+    l_nm.solverParams().setMaxIterations(self.m_maxIter)
   
     """ Solve it """
     print "Solving %s function..." %self.m_name
+    l_start = datetime.datetime.now()
     l_x1, l_fx1 = l_nm.solve(self.m_start)
+    l_stop = datetime.datetime.now()
+    print "Time elapsed %.3f seconds" %(l_stop-l_start).total_seconds()
     return True
 
 def main():
@@ -88,7 +92,7 @@ def main():
 
   l_testsPassed = 0
   l_tests = [testRb, testW, testP, testWs, testCubic]
-  print "Runnning test..."
+  print "Runnning tests..."
   for i in xrange(len(l_tests)):
     try:
       print "Test %u:" %(i + 1)
@@ -97,7 +101,7 @@ def main():
     except ConvergenceError as e:
       print e.message
     except:
-      print "Unexpected error: %s" %sys.exc_info()[0]
+      traceback.print_exc()
     finally:
       print
 
