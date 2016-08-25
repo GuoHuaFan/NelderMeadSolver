@@ -1,8 +1,8 @@
 """
   Filename    : tests.py
   Author      : Soumyaroop Roy
-  Date        : May 02, 2016
-  Description : Tests Nedler-Mead
+  Date        : August 23, 2016
+  Description : Tests Nedler-Mead Convex Solver
 """
 
 import sys
@@ -28,7 +28,7 @@ class Test:
     """ Construct a Nedler Mead optimizer """
     l_nm = NedlerMeadSolver(len(self.m_start), self.m_fn, l_coeffs)
   
-    nedlerMead.setMaxIterations(self.m_maxIter)
+    #nedlerMead.setMaxIterations(self.m_maxIter)
     #nedlerMead.setDebugLevel(1)
   
     """ Solve it """
@@ -39,15 +39,6 @@ class Test:
 def main():
 
   """ Functions """
-
-  """ Cubic function """
-  testCubic = Test(x_name="Cubic",
-    x_fn = lambda x: (x[0] * (x[0] - 1)
-                     + (x[1] - 2) * (x[1] + 2)
-                     + (x[2]) * (x[2] + 3)
-                     ),
-    x_start=[2000, -3000, 2],
-    x_maxIter=1000)
 
   """ Rosenbrock's """
   testRb = Test(x_name="Rosenbrock's",
@@ -84,21 +75,33 @@ def main():
                       +  (2 * x[0] + x[1] - 4) ** 2
                       ),
     x_start=[1000, -3000],
+    x_maxIter=2000)
+
+  """ Made-up function """
+  testCubic = Test(x_name="Made-up Cubic",
+    x_fn = lambda x: (x[0] * (x[0] - 1)
+                     + (x[1] - 2) * (x[1] + 2)
+                     + (x[2]) * (x[2] + 3)
+                     ),
+    x_start=[2000, -3000, 2],
     x_maxIter=1000)
 
   l_testsPassed = 0
-  l_tests = [testCubic, testRb, testW, testP, testWs]
+  l_tests = [testRb, testW, testP, testWs, testCubic]
+  print "Runnning test..."
   for i in xrange(len(l_tests)):
     try:
-      print "\nTest %u:" %(i + 1)
+      print "Test %u:" %(i + 1)
       if l_tests[i].run():
         l_testsPassed += 1
     except ConvergenceError as e:
       print e.message
     except:
       print "Unexpected error: %s" %sys.exc_info()[0]
+    finally:
+      print
 
-  print "%u out of %u test passed" %(l_testsPassed, len(l_tests))
+  print "Report: %u out of %u tests passed" %(l_testsPassed, len(l_tests))
 
 if __name__ == "__main__":
     main()
