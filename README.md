@@ -3,6 +3,7 @@ This is a Python module for the Nedler-Mead method. The implementation uses nump
 
 ## Usage
 The basic usage is as follows:
+
 	import nedlerMead
 	...
 	l_solver = nedlerMead.NedlerMeadSolver(<number of dimensions>, <function>)
@@ -10,6 +11,7 @@ The basic usage is as follows:
 
 ## Tests
 To the tests, run `tests.py`
+
 	$ python tests.py
 	Runnning tests...
 	Test 1:
