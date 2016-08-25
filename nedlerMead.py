@@ -14,7 +14,7 @@ import numpy as np
 _dbgLvl = 0
 
 """ Progress report interval """
-_progressReportInterval = 1000
+_progressReportInterval = 10000
 
 """ Error tolerance """
 _errorTolerance = 0.000000005
@@ -177,7 +177,7 @@ class Simplex ():
   def shrink (self):
     _debugPrint("Shrinking...")
     for i in self.m_sorted[1:]:
-      self.m_arr[i, :] = np.add(self.x1(),
+      self.m_arr[i, :] = np.add(self.m_x1,
                          self.m_coeffS * (np.subtract(self.m_arr[i], self.m_x1)))
 
   """ Overwrite the worst point """
