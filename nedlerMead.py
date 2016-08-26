@@ -69,12 +69,12 @@ class ConvergenceError(Exception):
     self.message = x_message;
 
 class Simplex ():
-  def __init__ (self, x_dim, x_fn, x_solverCoeffs):
+  def __init__ (self, x_dim, x_fn, x_solverCoeffs, x_size):
     self.m_dim = x_dim
     self.m_fn  = x_fn
     self.setSolverCoeffs(x_solverCoeffs)
     self.m_arr = np.empty([x_dim+1, x_dim])
-    self.m_size = 10
+    self.m_size = x_size
 
   def setSolverCoeffs (self, x_solverCoeffs):
     self.m_coeffR, self.m_coeffE, self.m_coeffC, self.m_coeffS = x_solverCoeffs.getCoeffs()
@@ -188,50 +188,58 @@ class SolverParams ():
     """ Progress report interval """
     self.m_progressReportInterval = 10000
     
-    """ Error tolerance """
-    self.m_errorTolerance = 0.000000005
+    """ Across iteration delta - used to decide convergence """
+    self.m_convergenceDelta = 0.000000005
     
     """ Maximum number of iterations """
     self.m_maxIterations = 20000
 
+    """ Simplex start size """
+    self.m_simplexStartSize = 10
+
   def setProgressReportInterval (self, x_progressReportInterval):
     self.m_progressReportInterval = x_progressReportInterval
   
-  def setErrorTolerance (self, x_errorTolerance):
-    self.m_errorTolerance = x_errorTolerance
+  def setConvergenceDelta (self, x_convergenceDelta):
+    self.m_convergenceDelta = x_convergenceDelta
   
   def setMaxIterations (self, x_maxIterations):
     self.m_maxIterations = x_maxIterations
 
+  def setSimplexStartSize (self, x_simplexStartSize):
+    self.m_simplexStartSize = x_simplexStartSize
+
   def getProgressReportInterval (self):
     return self.m_progressReportInterval
   
-  def getErrorTolerance (self):
-    return self.m_errorTolerance
+  def getConvergenceDelta (self):
+    return self.m_convergenceDelta
   
   def getMaxIterations (self):
     return self.m_maxIterations
 
+  def getSimplexStartSize (self):
+    return self.m_simplexStartSize
+
 class NedlerMeadSolver ():
-  def __init__ (self, x_dim, x_fn):
+  def __init__ (self):
     self.m_solverParams = SolverParams()
     self.m_solverCoeffs = SolverCoeffs()
-    """ Construct the simplex """
-    self.m_simplex = Simplex(x_dim, x_fn, self.m_solverCoeffs)
 
-  def __init__ (self, x_dim, x_fn, x_coeffs):
+  def __init__ (self, x_coeffs):
     self.m_solverParams = SolverParams()
     self.m_solverCoeffs = SolverCoeffs(x_coeffs)
-    """ Construct the simplex """
-    self.m_simplex = Simplex(x_dim, x_fn, self.m_solverCoeffs)
 
-  def solverParams (self):
+  def getSolverParams (self):
     return self.m_solverParams
 
-  def solverCoeffs (self):
+  def getSolverCoeffs (self):
     return self.m_solverCoeffs
 
-  def solve (self, x_start):
+  def solve (self, x_fn, x_start):
+    """ Construct the simplex """
+    self.m_simplex = Simplex(len(x_start), x_fn, self.m_solverCoeffs,
+                             self.m_solverParams.getSimplexStartSize())
 
     """ Anchor the simplex at a starting point; also orders the points """
     self.m_simplex.anchor(x_start)
@@ -293,14 +301,14 @@ class NedlerMeadSolver ():
         print "Progress status: Iteration %u..." %l_iter
 
       """ Check terminating condition """
-      if math.fabs(l_fxnp1 - l_fx1) <= self.m_solverParams.getErrorTolerance():
+      if math.fabs(l_fxnp1 - l_fx1) <= self.m_solverParams.getConvergenceDelta():
         print "Algorithm converged (%u iterations)" %l_iter
         break;
 
     """ All done """
     if l_iter == self.m_solverParams.getMaxIterations():
       raise ConvergenceError("Algorithm did not converge. Try increasing the"
-      + " number of iterations or 'm_size'")
+      + " number of iterations or starting simplex size")
 
     return (l_x1, l_fx1)
 
