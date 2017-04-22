@@ -25,7 +25,7 @@ def setDebugLevel (x_dbgLvl):
   @return None
 """
 def _error (x_str):
-  print ("ERROR: %s" %x_str)
+  print("ERROR: %s" %x_str)
   sys.exit()
 
 """
@@ -39,7 +39,7 @@ def _error (x_str):
 def _debugPrint (x_str, x_dbgLvl=1):
   global _dbgLvl
   if x_dbgLvl <= _dbgLvl:
-    print ("Debug (Level %u): %s" %(x_dbgLvl, x_str))
+    print("Debug (Level %u): %s" %(x_dbgLvl, x_str))
 
 """ Simplex class """
 
@@ -81,20 +81,20 @@ class Simplex ():
 
   def anchor (self, x_start):
     """ Initialize simplex to x_start """
-    for i in xrange(len(self.m_arr)):
+    for i in range(len(self.m_arr)):
       self.m_arr[i, :] = np.array([x_start])
       if i == 0:
         continue
       self.m_arr[i, i - 1] += self.m_size
 
   def printf (self):
-    print "Simplex details:"
-    print "  Anchor: %s" %self.m_arr[0]
-    print "  Size: %u" %self.m_size
-    print "  Points: ["
+    print("Simplex details:")
+    print("  Anchor: %s" %self.m_arr[0])
+    print("  Size: %u" %self.m_size)
+    print("  Points: [")
     for i in self.m_sorted:
-      print "    %s, %.2f" %(self.m_arr[i], self.m_fn(self.m_arr[i]))
-    print "  ]"
+      print("    %s, %.2f" %(self.m_arr[i], self.m_fn(self.m_arr[i])))
+    print("  ]")
 
   """ Sort x_i using key f(x_i) """
   """ FIXME: Is there a numpy version of the standard python 'sort()' that
@@ -106,7 +106,7 @@ class Simplex ():
   def order (self):
     """ Sort """
     l_fnVal = np.zeros(len(self.m_arr))
-    for i in xrange(len(self.m_arr)):
+    for i in range(len(self.m_arr)):
       l_fnVal[i] = self.m_fn(self.m_arr[i])
     self.m_sorted = np.argsort(l_fnVal)
 
@@ -298,11 +298,11 @@ class NelderMeadSolver ():
 
       """ Print progress report """
       if l_iter % self.m_solverParams.getProgressReportInterval() == 0:
-        print "Progress status: Iteration %u..." %l_iter
+        print("Progress status: Iteration %u..." %l_iter)
 
       """ Check terminating condition """
       if math.fabs(l_fxnp1 - l_fx1) <= self.m_solverParams.getConvergenceDelta():
-        print "Algorithm converged (%u iterations)" %l_iter
+        print("Algorithm converged (%u iterations)" %l_iter)
         break;
 
     """ All done """
