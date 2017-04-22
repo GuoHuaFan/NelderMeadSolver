@@ -1,8 +1,8 @@
 """
-  Filename    : nedlerMead.py
+  Filename    : nelderMead.py
   Author      : Soumyaroop Roy
   Date        : May 02, 2016
-  Description : Nedler-Mead method using numpy
+  Description : Nelder-Mead method using numpy
   Algorithm   : https://en.wikipedia.org/wiki/Nelder-Mead_method#One_possible_variation_of_the_NM_algorithm
 """
 
@@ -221,7 +221,7 @@ class SolverParams ():
   def getSimplexStartSize (self):
     return self.m_simplexStartSize
 
-class NedlerMeadSolver ():
+class NelderMeadSolver ():
   def __init__ (self):
     self.m_solverParams = SolverParams()
     self.m_solverCoeffs = SolverCoeffs()

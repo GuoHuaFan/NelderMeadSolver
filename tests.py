@@ -2,7 +2,7 @@
   Filename    : tests.py
   Author      : Soumyaroop Roy
   Date        : August 23, 2016
-  Description : Tests Nedler-Mead Convex Solver
+  Description : Tests Nelder-Mead Convex Solver
 """
 
 import sys
@@ -10,9 +10,9 @@ import datetime
 import traceback
 import math
 
-import nedlerMead
-from nedlerMead import NedlerMeadSolver
-from nedlerMead import ConvergenceError
+import nelderMead
+from nelderMead import NelderMeadSolver
+from nelderMead import ConvergenceError
 
 class Test:
   def __init__ (self, x_name, x_fn, x_start, x_maxIter, x_expectedResult):
@@ -31,7 +31,7 @@ class Test:
                 )
   
     """ Set up the solver """
-    l_nm = NedlerMeadSolver(l_coeffs)
+    l_nm = NelderMeadSolver(l_coeffs)
     l_nm.getSolverParams().setMaxIterations(self.m_maxIter)
     l_maxConvergenceDelta = 1.0E-8
     l_maxErrorTolerance = l_maxConvergenceDelta*100

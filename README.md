@@ -1,5 +1,5 @@
-# Nedler-Mead Method
-This is a Python module for the Nedler-Mead method. The implementation uses numpy. The algorithm used is available [here](https://en.wikipedia.org/wiki/Nelder-Mead_method#One_possible_variation_of_the_NM_algorithm).
+# Nelder-Mead Method
+This is a Python module for the Nelder-Mead method. The implementation uses numpy. The algorithm used is available [here](https://en.wikipedia.org/wiki/Nelder-Mead_method#One_possible_variation_of_the_NM_algorithm).
 
 ## Development Notes
 This has been developed and tested on Mac OSX (Darwin Kernel Version 15.6.0) using Python 2.7.
@@ -7,9 +7,9 @@ This has been developed and tested on Mac OSX (Darwin Kernel Version 15.6.0) usi
 ## Usage
 The basic usage is as follows:
 
-	import nedlerMead
+	import nelderMead
 	...
-	l_solver = nedlerMead.NedlerMeadSolver(<number of dimensions>, <function>)
+	l_solver = nelderMead.NelderMeadSolver(<number of dimensions>, <function>)
 	l_solver.solve(<start point>)
 
 ## Tests
@@ -51,7 +51,7 @@ Run [Coverage.py](https://coverage.readthedocs.io/en/coverage-4.2/) to generate 
 	$ coverage report --omit="/System*"
 	Name            Stmts   Miss  Cover
 	-----------------------------------
-	nedlerMead.py     148     25    83%
+	nelderMead.py     148     25    83%
 	tests.py           53      6    89%
 	-----------------------------------
 	TOTAL             201     31    85%
